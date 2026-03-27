@@ -1028,16 +1028,13 @@
       const placeholder = document.getElementById('carouselPlaceholder');
       const dotsEl      = document.getElementById('carouselDots');
 
-      // Auto-discover all images by fetching the directory listing
+      // Reads images/manifest.json — a simple array of filenames.
+      // To add a new photo: drop it in images/ and add its filename to manifest.json.
       async function discoverImages() {
         try {
-          const res  = await fetch('images/');
-          const html = await res.text();
-          const doc  = new DOMParser().parseFromString(html, 'text/html');
-          return [...doc.querySelectorAll('a[href]')]
-            .map(a => decodeURIComponent(a.getAttribute('href')))
-            .filter(href => /\.(jpe?g|png|webp|gif|avif)$/i.test(href))
-            .map(href => 'images/' + href.replace(/^.*\//, ''));
+          const res  = await fetch('images/manifest.json');
+          const list = await res.json();
+          return list.map(f => 'images/' + f);
         } catch (e) {
           return [];
         }
